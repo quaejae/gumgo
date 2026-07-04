@@ -41,7 +41,7 @@ function render() {
 
 function headerHtml() {
   return `<div class="dash-header">
-    <div class="dash-title">🔐 금고털이</div>
+    <div class="dash-title">🔐 Good Fellas</div>
     <div class="dash-round">라운드 ${S.round} / ${S.config.rounds}</div>
   </div>`;
 }

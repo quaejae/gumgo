@@ -98,7 +98,7 @@ function renderSetup() {
 
   el.innerHTML = `
     <div class="topbar"><span class="tag">방 ${GumgoSync.code}</span><span class="round">설정</span></div>
-    <h1>🔐 금고털이 설정</h1>
+    <h1>🔐 Good Fellas 설정</h1>
     <p class="muted">진행자 본인도 참여자에 포함하세요.</p>
     <div class="card">
       ${rows}
