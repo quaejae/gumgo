@@ -8,7 +8,7 @@ GumgoSync.init();
 
 let S = null;
 render(); // 즉시 대기 화면 표시(구독 응답 전 빈 화면 방지)
-GumgoSync.subscribe((data) => { S = data; render(); });
+GumgoSync.subscribe((data) => { S = GumgoGame.normalizeState(data); render(); });
 
 function nameOf(id) { const p = S.players.find((x) => x.id === id); return p ? p.name : "?"; }
 function ids() { return S.players.map((p) => p.id); }
@@ -66,13 +66,17 @@ function scoreTableHtml() {
       const h = S.history && S.history[r];
       let content = "";
       if (h) {
-        const gain = h.gains[id] ?? 0;
+        // Firebase는 빈 배열을 저장하지 않으므로 undefined 방어
+        const robbed = h.robbedIds || [];
+        const dups = h.duplicates || [];
+        const takes = h.takes || {};
+        const gain = (h.gains && h.gains[id]) ?? 0;
         if (h.robberId === id) {
           content = `${gain} <span class="mk">🔫</span>`;            // 강탈자
-        } else if (h.robbedIds.includes(id)) {
+        } else if (robbed.includes(id)) {
           content = `${gain} <span class="mk">🩸</span>`;            // 강탈 당함
-        } else if (h.duplicates.includes(id)) {
-          content = `<s class="struck">${h.takes[id] ?? 0}</s>`;      // 중복 몰수(취소선)
+        } else if (dups.includes(id)) {
+          content = `<s class="struck">${takes[id] ?? 0}</s>`;        // 중복 몰수(취소선)
         } else {
           content = `${gain}`;
         }
@@ -144,14 +148,16 @@ function duplicateEventHtml() {
 function resultEventHtml() {
   const h = S.history[S.round];
   if (!h) return "";
-  const ordered = S.order.slice();
+  const robbed = h.robbedIds || [];
+  const dups = h.duplicates || [];
+  const ordered = (S.order || []).slice();
   const rows = ordered.map((id) => {
-    const took = h.takes[id] ?? 0;
-    const gain = h.gains[id] ?? 0;
+    const took = (h.takes && h.takes[id]) ?? 0;
+    const gain = (h.gains && h.gains[id]) ?? 0;
     let note = "";
     if (h.robberId === id) note = "강탈자";
-    else if (h.robbedIds.includes(id)) note = "피강탈";
-    else if (h.duplicates.includes(id)) note = "중복몰수";
+    else if (robbed.includes(id)) note = "피강탈";
+    else if (dups.includes(id)) note = "중복몰수";
     return `<tr>
       <td class="name">${nameOf(id)}</td>
       <td>${took}</td>

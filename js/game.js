@@ -131,6 +131,30 @@ function finalizeRound(holdings, confiscatedIds) {
   return gains;
 }
 
+/* Firebase는 빈 배열/null을 저장하지 않아 읽을 때 undefined가 된다.
+ * 상태를 받은 직후 호출해 배열 필드를 안전하게 복원한다. */
+function normalizeState(s) {
+  if (!s || typeof s !== "object") return s;
+  if (!Array.isArray(s.order)) s.order = s.order || [];
+  if (!Array.isArray(s.duplicates)) s.duplicates = s.duplicates || [];
+  if (s.robber && typeof s.robber === "object") {
+    if (!Array.isArray(s.robber.robbedIds)) s.robber.robbedIds = s.robber.robbedIds || [];
+    if (!s.robber.holdings) s.robber.holdings = {};
+  }
+  if (s.history && typeof s.history === "object") {
+    for (const r in s.history) {
+      const h = s.history[r];
+      if (!h) continue;
+      if (!Array.isArray(h.order)) h.order = h.order || [];
+      if (!Array.isArray(h.robbedIds)) h.robbedIds = h.robbedIds || [];
+      if (!Array.isArray(h.duplicates)) h.duplicates = h.duplicates || [];
+      if (!h.takes) h.takes = {};
+      if (!h.gains) h.gains = {};
+    }
+  }
+  return s;
+}
+
 /* 브라우저(전역)와 Node(테스트) 양쪽 노출 */
 const GumgoGame = {
   balanceForPlayers,
@@ -140,6 +164,7 @@ const GumgoGame = {
   attemptRob,
   duplicatesToConfiscate,
   finalizeRound,
+  normalizeState,
 };
 if (typeof window !== "undefined") window.GumgoGame = GumgoGame;
 if (typeof module !== "undefined") module.exports = GumgoGame;

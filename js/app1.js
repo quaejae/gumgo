@@ -52,7 +52,7 @@ let booted = false;
 function boot(data) {
   if (booted) return;
   booted = true;
-  S = data && data.players ? data : freshState();
+  S = data && data.players ? GumgoGame.normalizeState(data) : freshState();
   render();
 }
 try { GumgoSync.once(boot); } catch (e) { boot(null); }
