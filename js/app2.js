@@ -62,8 +62,21 @@ function scoreTableHtml() {
 
   const rows = ordered.map((id, i) => {
     const cells = rounds.map((r) => {
-      const g = S.history && S.history[r] ? S.history[r].gains[id] : undefined;
-      return `<td class="${r === S.round ? "curcol" : ""}">${g == null ? "" : g}</td>`;
+      const h = S.history && S.history[r];
+      let content = "";
+      if (h) {
+        const gain = h.gains[id] ?? 0;
+        if (h.robberId === id) {
+          content = `${gain} <span class="mk">🔫</span>`;            // 강탈자
+        } else if (h.robbedIds.includes(id)) {
+          content = `${gain} <span class="mk">🩸</span>`;            // 강탈 당함
+        } else if (h.duplicates.includes(id)) {
+          content = `<s class="struck">${h.takes[id] ?? 0}</s>`;      // 중복 몰수(취소선)
+        } else {
+          content = `${gain}`;
+        }
+      }
+      return `<td class="${r === S.round ? "curcol" : ""}">${content}</td>`;
     }).join("");
     return `<tr class="${i === 0 ? "lead" : ""}">
       <td class="rank">${i + 1}</td>
@@ -72,7 +85,9 @@ function scoreTableHtml() {
       <td class="total">${S.cumulative[id] || 0}</td></tr>`;
   }).join("");
 
-  return `<table class="score"><thead>${head}</thead><tbody>${rows}</tbody></table>`;
+  const legend = `<div class="score-legend">
+    <span>🔫 강탈자</span><span>🩸 강탈 당함</span><span><s class="struck">숫자</s> 중복 몰수</span></div>`;
+  return `<table class="score"><thead>${head}</thead><tbody>${rows}</tbody></table>${legend}`;
 }
 
 /* 단계별 이벤트 패널 */

@@ -166,6 +166,10 @@ table.score th { color:var(--muted); font-size:15px; position:sticky; top:0; bac
 table.score td.name { text-align:left; font-weight:800; }
 table.score td.total { font-weight:900; color:var(--gold); font-size:22px; }
 table.score tr.lead td { background: rgba(244,196,48,.08); }
+table.score s.struck { color: var(--danger); text-decoration: line-through; text-decoration-thickness: 2px; opacity:.85; }
+table.score .mk { font-size:15px; }
+.score-legend { display:flex; gap:16px; flex-wrap:wrap; margin-top:12px; color:var(--muted); font-size:14px; }
+.score-legend s.struck { color:var(--danger); }
 table.score .rank { color:var(--muted); width:36px; }
 table.score .curcol { background: rgba(244,196,48,.06); }
 
