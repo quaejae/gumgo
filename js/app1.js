@@ -43,11 +43,20 @@ el.addEventListener("click", (e) => {
 function ids() { return S.players.map((p) => p.id); }
 function nameOf(id) { const p = S.players.find((x) => x.id === id); return p ? p.name : "?"; }
 
-/* 앱1은 유일 writer지만, 새로고침 대비 기존 상태가 있으면 이어받기 */
-GumgoSync.once((data) => {
+/* 즉시 첫 화면을 그려 빈 화면을 방지(Firebase 응답 전 로딩 표시) */
+render();
+
+/* 앱1은 유일 writer. 새로고침 대비 기존 상태가 있으면 이어받되,
+ * Firebase 응답이 없거나 늦어도(오프라인/차단) 진행할 수 있도록 폴백. */
+let booted = false;
+function boot(data) {
+  if (booted) return;
+  booted = true;
   S = data && data.players ? data : freshState();
   render();
-});
+}
+try { GumgoSync.once(boot); } catch (e) { boot(null); }
+setTimeout(() => boot(null), 3500); // 3.5초 내 응답 없으면 새 게임으로 시작
 
 /* ---------------------------------------------------------------- *
  * 렌더 라우터

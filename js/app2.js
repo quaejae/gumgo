@@ -7,6 +7,7 @@ const el = document.getElementById("app");
 GumgoSync.init();
 
 let S = null;
+render(); // 즉시 대기 화면 표시(구독 응답 전 빈 화면 방지)
 GumgoSync.subscribe((data) => { S = data; render(); });
 
 function nameOf(id) { const p = S.players.find((x) => x.id === id); return p ? p.name : "?"; }
