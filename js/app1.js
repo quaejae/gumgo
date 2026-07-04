@@ -30,6 +30,16 @@ function freshState() {
 function save() { GumgoSync.save(S); }
 function commit() { render(); save(); }
 
+/* 상단바 초기화 버튼(모든 화면 공통) — 이벤트 위임으로 재렌더 후에도 동작 */
+el.addEventListener("click", (e) => {
+  if (e.target.closest("#resetBtn")) {
+    if (confirm("게임을 초기화할까요?\n진행 중인 모든 라운드 기록이 사라집니다.")) {
+      S = freshState();
+      commit();
+    }
+  }
+});
+
 function ids() { return S.players.map((p) => p.id); }
 function nameOf(id) { const p = S.players.find((x) => x.id === id); return p ? p.name : "?"; }
 
@@ -59,8 +69,11 @@ function render() {
 }
 
 function topbar() {
-  return `<div class="topbar"><span class="tag">방 ${GumgoSync.code}</span>
-    <span class="round">라운드 ${S.round} / ${S.config.rounds}</span></div>`;
+  return `<div class="topbar">
+    <span class="tag">방 ${GumgoSync.code}</span>
+    <span class="round">라운드 ${S.round} / ${S.config.rounds}</span>
+    <button id="resetBtn" class="reset-x">⟲ 초기화</button>
+  </div>`;
 }
 
 /* ---------------------------------------------------------------- *

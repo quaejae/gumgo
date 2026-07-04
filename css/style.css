@@ -52,8 +52,13 @@ body {
   max-width: 480px; margin: 0 auto; min-height: 100vh;
   padding: 18px 18px 40px; display: flex; flex-direction: column;
 }
-.phone .topbar { display:flex; justify-content: space-between; align-items:center; margin-bottom: 8px; }
-.phone .topbar .round { font-weight: 800; color: var(--gold); }
+.phone .topbar { display:flex; justify-content: space-between; align-items:center; gap:8px; margin-bottom: 8px; }
+.phone .topbar .round { font-weight: 800; color: var(--gold); flex:1; text-align:center; }
+.reset-x {
+  border:1px solid var(--line); background:transparent; color:var(--muted);
+  font-size:13px; font-weight:700; padding:6px 10px; border-radius:999px; cursor:pointer;
+}
+.reset-x:active { background:var(--panel2); color:var(--danger); }
 .phone h1 { font-size: 22px; margin: 6px 0 2px; }
 .phone .big-name {
   font-size: 40px; font-weight: 900; text-align: center;
