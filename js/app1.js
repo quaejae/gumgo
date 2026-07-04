@@ -205,31 +205,40 @@ function renderTaking() {
  * ---------------------------------------------------------------- */
 function renderPeek() {
   const firstId = S.order[0];
-  // 타임라인: [gap0] name1 [gap1] name2 ... [gapN]
-  const parts = [];
-  parts.push(`<button class="gap ${S.peekSel === 0 ? "active" : ""}" data-k="0"></button>`);
+
+  // 세로 타임라인: 이름 박스를 위→아래로 쌓고, 사이의 세로 연결선(구간)을 탭.
+  // 구간 k = 순서상 k번째 참여자까지 가져간 뒤의 금고 잔여 (k=0: 시작 시점)
+  const gapHtml = (k) => {
+    const active = S.peekSel === k;
+    let badge = "";
+    if (active) {
+      const rem = GumgoGame.remainingAfter(S.order, S.takes, S.config.total, k);
+      badge = `<span class="vbadge">잔여 <b>${rem}</b></span>`;
+    }
+    return `<button class="vgap ${active ? "active" : ""}" data-k="${k}"><span class="line"></span>${badge}</button>`;
+  };
+
+  const parts = [gapHtml(0)];
   S.order.forEach((id, i) => {
-    parts.push(`<span class="node">${nameOf(id)}</span>`);
-    parts.push(`<button class="gap ${S.peekSel === i + 1 ? "active" : ""}" data-k="${i + 1}"></button>`);
+    const isFirst = i === 0;
+    parts.push(`<div class="vnode ${isFirst ? "me" : ""}">${nameOf(id)}${isFirst ? " (나)" : ""}</div>`);
+    parts.push(gapHtml(i + 1));
   });
 
-  let peekHtml = `<p class="muted center">확인할 구간(점선)을 선택하세요.</p>`;
+  let caption = `<p class="muted center">이름 사이의 세로선을 눌러<br/>그 시점의 금고 잔여 금화를 확인하세요.</p>`;
   if (S.peekSel != null) {
-    const rem = GumgoGame.remainingAfter(S.order, S.takes, S.config.total, S.peekSel);
     const label = S.peekSel === 0 ? "게임 시작 시점" : `${nameOf(S.order[S.peekSel - 1])} 입장 직후`;
-    peekHtml = `<div class="peek-result">${label}의 금고 잔여<b>${rem}</b></div>`;
+    caption = `<p class="center" style="font-size:17px"><b style="color:var(--gold)">${label}</b>의 금고 잔여</p>`;
   }
 
   el.innerHTML = `${topbar()}
     <p class="muted center">전원 금화 수령 완료 · 첫 순서 재입장</p>
-    <div class="big-name" style="font-size:28px; padding:10px">${nameOf(firstId)}</div>
-    <div class="card">
-      <div class="timeline">${parts.join("")}</div>
-      ${peekHtml}
-    </div>
+    <div class="big-name" style="font-size:26px; padding:8px">${nameOf(firstId)}</div>
+    ${caption}
+    <div class="card"><div class="vtimeline">${parts.join("")}</div></div>
     <button class="btn" id="donesee">엿보기 종료 → 진행</button>`;
 
-  el.querySelectorAll(".gap").forEach((g) => {
+  el.querySelectorAll(".vgap").forEach((g) => {
     g.onclick = () => { S.peekSel = +g.dataset.k; commit(); };
   });
   el.querySelector("#donesee").onclick = () => { S.phase = "preRob"; commit(); };
