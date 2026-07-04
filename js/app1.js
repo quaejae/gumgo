@@ -228,7 +228,7 @@ function renderPeek() {
       const rem = GumgoGame.remainingAfter(S.order, S.takes, S.config.total, k);
       badge = `<span class="vbadge">잔여 <b>${rem}</b></span>`;
     }
-    return `<button class="vgap ${active ? "active" : ""}" data-k="${k}"><span class="line"></span>${badge}</button>`;
+    return `<button class="vgap ${active ? "active" : ""}" data-k="${k}"><span class="line"></span><span class="dot"></span>${badge}</button>`;
   };
 
   const parts = [gapHtml(0)];

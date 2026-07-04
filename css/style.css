@@ -116,14 +116,25 @@ input[type=range]::-webkit-slider-thumb {
 }
 .vnode.me { background:linear-gradient(180deg,var(--panel2),var(--panel)); border:1px solid var(--gold); color:var(--gold); }
 .vgap {
-  all:unset; cursor:pointer; height:52px; width:70%; max-width:300px;
+  all:unset; cursor:pointer; height:60px; width:70%; max-width:300px;
   display:flex; align-items:center; justify-content:center; position:relative;
 }
 .vgap .line { width:4px; height:100%; background:var(--line); border-radius:2px; transition:all .1s; }
-.vgap:active .line { background:var(--gold-deep); }
-.vgap.active .line { background:var(--gold); width:6px; box-shadow:0 0 14px var(--gold); }
+.vgap.active .line { background:var(--gold); width:6px; }
+/* 선 중앙의 원형 터치 버튼 */
+.vgap .dot {
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:34px; height:34px; border-radius:50%;
+  background:var(--panel2); border:2px solid var(--gold-deep);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 3px 10px rgba(0,0,0,.4); transition:all .1s;
+}
+.vgap .dot::after { content:"＋"; color:var(--gold); font-size:20px; font-weight:800; line-height:1; }
+.vgap:active .dot { transform:translate(-50%,-50%) scale(.88); }
+.vgap.active .dot { background:var(--gold); border-color:var(--gold); box-shadow:0 0 16px var(--gold); }
+.vgap.active .dot::after { content:"✓"; color:#2a1c00; }
 .vgap .vbadge {
-  position:absolute; left:calc(50% + 22px); white-space:nowrap;
+  position:absolute; left:calc(50% + 30px); white-space:nowrap;
   background:var(--gold); color:#2a1c00; font-weight:800;
   padding:8px 16px; border-radius:999px; font-size:16px;
   box-shadow:0 4px 14px rgba(0,0,0,.4);
