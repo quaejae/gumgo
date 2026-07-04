@@ -221,14 +221,17 @@ function renderPeek() {
 
   // 세로 타임라인: 이름 박스를 위→아래로 쌓고, 사이의 세로 연결선(구간)을 탭.
   // 구간 k = 순서상 k번째 참여자까지 가져간 뒤의 금고 잔여 (k=0: 시작 시점)
+  const locked = S.peekSel != null; // 한 시점 선택 완료 시 나머지 잠금
   const gapHtml = (k) => {
-    const active = S.peekSel === k;
+    const chosen = S.peekSel === k;
     let badge = "";
-    if (active) {
+    if (chosen) {
       const rem = GumgoGame.remainingAfter(S.order, S.takes, S.config.total, k);
       badge = `<span class="vbadge">잔여 <b>${rem}</b></span>`;
     }
-    return `<button class="vgap ${active ? "active" : ""}" data-k="${k}"><span class="line"></span><span class="dot"></span>${badge}</button>`;
+    const cls = chosen ? "active" : (locked ? "locked" : "");
+    const dis = locked && !chosen ? "disabled" : "";
+    return `<button class="vgap ${cls}" data-k="${k}" ${dis}><span class="line"></span><span class="dot"></span>${badge}</button>`;
   };
 
   const parts = [gapHtml(0)];
@@ -238,10 +241,10 @@ function renderPeek() {
     parts.push(gapHtml(i + 1));
   });
 
-  let caption = `<p class="muted center">이름 사이의 세로선을 눌러<br/>그 시점의 금고 잔여 금화를 확인하세요.</p>`;
-  if (S.peekSel != null) {
+  let caption = `<p class="muted center">단 <b style="color:var(--gold)">한 시점</b>만 확인할 수 있습니다.<br/>원하는 지점의 원형 버튼을 누르세요.</p>`;
+  if (locked) {
     const label = S.peekSel === 0 ? "게임 시작 시점" : `${nameOf(S.order[S.peekSel - 1])} 입장 직후`;
-    caption = `<p class="center" style="font-size:17px"><b style="color:var(--gold)">${label}</b>의 금고 잔여</p>`;
+    caption = `<p class="center" style="font-size:17px"><b style="color:var(--gold)">${label}</b>의 금고 잔여 (확인 완료)</p>`;
   }
 
   el.innerHTML = `${topbar()}
@@ -252,7 +255,14 @@ function renderPeek() {
     <button class="btn" id="donesee">엿보기 종료 → 진행</button>`;
 
   el.querySelectorAll(".vgap").forEach((g) => {
-    g.onclick = () => { S.peekSel = +g.dataset.k; commit(); };
+    g.onclick = () => {
+      if (S.peekSel != null) return; // 이미 한 시점 확인 완료 → 잠금
+      const k = +g.dataset.k;
+      const label = k === 0 ? "게임 시작 시점" : `${nameOf(S.order[k - 1])} 입장 직후`;
+      if (confirm(`'${label}'의 금고 잔여 금화를 확인할까요?\n엿보기는 라운드당 한 번만 가능합니다.`)) {
+        S.peekSel = k; commit();
+      }
+    };
   });
   el.querySelector("#donesee").onclick = () => { S.phase = "preRob"; commit(); };
 }

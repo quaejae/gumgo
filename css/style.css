@@ -133,6 +133,10 @@ input[type=range]::-webkit-slider-thumb {
 .vgap:active .dot { transform:translate(-50%,-50%) scale(.88); }
 .vgap.active .dot { background:var(--gold); border-color:var(--gold); box-shadow:0 0 16px var(--gold); }
 .vgap.active .dot::after { content:"✓"; color:#2a1c00; }
+/* 한 시점 확인 후 나머지 버튼 잠금 */
+.vgap:disabled { cursor:default; opacity:.3; }
+.vgap.locked .dot { border-color:var(--line); box-shadow:none; }
+.vgap.locked .dot::after { content:"🔒"; color:var(--muted); font-size:13px; }
 .vgap .vbadge {
   position:absolute; left:calc(50% + 30px); white-space:nowrap;
   background:var(--gold); color:#2a1c00; font-weight:800;
